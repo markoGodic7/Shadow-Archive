@@ -143,7 +143,10 @@ PY
 fi
 
 CTX_PATH="$PROJECT_ROOT/$CONTEXT_FILE"
-mkdir -p "$(dirname "$CTX_PATH")"
+if [[ ! -f "$CTX_PATH" ]]; then
+  echo "agent-context: context file '$CONTEXT_FILE' not found; nothing to do." >&2
+  exit 0
+fi
 
 # Build the managed section
 TMP_SECTION="$(mktemp)"
@@ -176,15 +179,13 @@ if os.path.exists(ctx_path):
         if end_of_marker < len(content) and content[end_of_marker] == "\n":
             end_of_marker += 1
         new_content = content[:s] + section + content[end_of_marker:]
-    elif s != -1:
-        new_content = content[:s] + section
-    elif e != -1:
-        end_of_marker = e + len(end)
-        if end_of_marker < len(content) and content[end_of_marker] == "\r":
-            end_of_marker += 1
-        if end_of_marker < len(content) and content[end_of_marker] == "\n":
-            end_of_marker += 1
-        new_content = section + content[end_of_marker:]
+
+    elif s != -1 or e != -1:
+        # Unmatched marker state: preserve existing content and append a clean block
+        if content and not content.endswith("\n"):
+            content += "\n"
+        new_content = (content + "\n" + section) if content else section
+
     else:
         if content and not content.endswith("\n"):
             content += "\n"
@@ -192,9 +193,13 @@ if os.path.exists(ctx_path):
 else:
     new_content = section
 
-new_content = new_content.replace("\r\n", "\n").replace("\r", "\n")
-with open(ctx_path, "wb") as fh:
-    fh.write(new_content.encode("utf-8"))
+if os.path.exists(ctx_path):
+    new_content = new_content.replace("\r\n", "\n").replace("\r", "\n")
+    with open(ctx_path, "wb") as fh:
+        fh.write(new_content.encode("utf-8"))
+else:
+    print(f"agent-context: context file '{ctx_path}' not found; nothing to do.", file=sys.stderr)
+    sys.exit(0)
 PY
 
 echo "agent-context: updated $CONTEXT_FILE"

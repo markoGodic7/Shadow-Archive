@@ -314,6 +314,7 @@ except Exception:
                 if [ -n "$sorted_presets" ]; then
                     # python3 succeeded and returned preset IDs — search in priority order
                     while IFS= read -r preset_id; do
+                        [[ "$preset_id" =~ ^[A-Za-z0-9._-]+$ ]] || continue
                         local candidate="$presets_dir/$preset_id/templates/${template_name}.md"
                         [ -f "$candidate" ] && echo "$candidate" && return 0
                     done <<< "$sorted_presets"
@@ -402,6 +403,7 @@ except Exception:
                 if [ -n "$sorted_presets" ]; then
                     local yaml_warned=false
                     while IFS= read -r preset_id; do
+                        [[ "$preset_id" =~ ^[A-Za-z0-9._-]+$ ]] || continue
                         # Read strategy and file path from preset manifest
                         local strategy="replace"
                         local manifest_file=""
@@ -566,12 +568,7 @@ except Exception:
                     *'{CORE_TEMPLATE}'*) ;;
                     *) echo "Error: wrap strategy missing {CORE_TEMPLATE} placeholder" >&2; return 1 ;;
                 esac
-                while [[ "$layer_content" == *'{CORE_TEMPLATE}'* ]]; do
-                    local before="${layer_content%%\{CORE_TEMPLATE\}*}"
-                    local after="${layer_content#*\{CORE_TEMPLATE\}}"
-                    layer_content="${before}${content}${after}"
-                done
-                content="$layer_content"
+                content="${layer_content//\{CORE_TEMPLATE\}/$content}"
                 ;;
             *) echo "Error: unknown strategy '$strat'" >&2; return 1 ;;
         esac

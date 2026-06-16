@@ -26,7 +26,7 @@
 | `atk_max` | int | No | Maximum ATK | 3500 |
 | `def_min` | int | No | Minimum DEF | 2000 |
 | `def_max` | int | No | Maximum DEF | 3000 |
-| `banlist` | string | No | Banlist status | "Unlimited" / "Limited" / "Banned" |
+| `banlist` | string | No | Banlist status | "Forbidden" / "Limited" / "Semi-Limited" / "Unlimited" |
 | `format` | string | No | Format (TCG/OCG/Goat) | "TCG" |
 | `sort` | string | No | Sort order | "name" / "-atk" / "-views" |
 | `page` | int | No | Page number (1-indexed) | 1 |
@@ -61,9 +61,9 @@
         }
       ],
       "banlist_info": {
-        "ban_tcg": "Not Banned",
-        "ban_ocg": "Not Banned",
-        "ban_goat": "Not Banned"
+        "ban_tcg": "Unlimited",
+        "ban_ocg": "Unlimited",
+        "ban_goat": "Unlimited"
       }
     },
     ...
@@ -82,7 +82,10 @@
 **Error (404 Not Found)**:
 ```json
 {
-  "error": "No cards match your filters"
+  "count": 0,
+  "next": null,
+  "previous": null,
+  "results": []
 }
 ```
 
@@ -267,9 +270,8 @@ X-Device-ID: (optional) 550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Token Details**:
-- `access`: JWT token, 15 minutes expiry
-- `refresh`: JWT token, 30 days expiry (can be rotated)
-- Both tokens sent in Authorization header: `Authorization: Bearer {token}`
+- `access`: JWT token, 15 minutes expiry. Sent in the Authorization header for all authenticated requests: `Authorization: Bearer {access_token}`
+- `refresh`: JWT token, 30 days expiry (can be rotated). Sent in the request body to `/api/auth/refresh/` only. Not used as a Bearer token.
 
 **Error (401 Unauthorized)**:
 ```json
@@ -633,8 +635,8 @@ card_id,quantity,condition,set_code,rarity
 ```json
 {
   "status": "success",
-  "message": "All caches cleared",
-  "cleared_items": 8950
+  "message": "Banlist cache cleared and re-fetched",
+  "cleared_items": 1
 }
 ```
 

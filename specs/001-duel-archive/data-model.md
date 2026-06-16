@@ -195,9 +195,9 @@
 **Attributes**:
 - `id` (int, PK): Auto-incrementing
 - `card_id` (OneToOneField → Card): Reference to card
-- `ban_tcg` (choice): "Not Banned" / "Limited" / "Semi-Limited" / "Banned"
+- `ban_tcg` (choice): "Forbidden" / "Limited" / "Semi-Limited" / "Unlimited"
 - `ban_ocg` (choice): Same options
-- `ban_goat` (choice): Same options (Goat format = older ruleset)
+- `ban_goat` (choice): Same options
 - `updated_at` (timestamp): Last fetch from YGOPRODeck API
 
 **Storage**: PostgreSQL `cards_banliststatus` table
@@ -217,7 +217,7 @@
 **Purpose**: User's custom deck (main/extra/side sections)
 
 **Attributes**:
-- `id` (int, PK): Auto-incrementing UUID
+- `id` (UUID, PK): Unique identifier; generated server-side on creation
 - `user_id` (ForeignKey → User): Owner
 - `name` (string): Deck name (e.g., "Blue-Eyes Control")
 - `description` (text, nullable): Deck strategy notes
@@ -350,7 +350,7 @@
 **Purpose**: User's trade proposal; system finds matches
 
 **Attributes**:
-- `id` (int, PK): Auto-incrementing UUID
+- `id` (UUID, PK): Unique identifier; generated server-side on creation
 - `user_id` (ForeignKey → User): User posting offer
 - `offered_card_ids` (JSON array): List of card IDs user is offering
 - `wanted_card_ids` (JSON array): List of card IDs user wants

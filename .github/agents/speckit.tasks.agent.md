@@ -138,7 +138,7 @@ The tasks.md should be immediately executable - each task must be specific enoug
 
 **CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
 
-**Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
+**Tests are REQUIRED by default**: Test tasks MUST be generated for every implementation phase to meet the project's coverage requirements (frontend ≥80%, backend ≥75%). Tests cover happy path, error states, edge cases, loading states, and empty states. A phase is not complete until all tests pass. Only skip test generation if a feature specification explicitly includes a flag to opt out (e.g., `tests: none`).
 
 ### Checklist Format (REQUIRED)
 
@@ -200,8 +200,8 @@ Every task MUST strictly follow this format:
 ### Phase Structure
 
 - **Phase 1**: Setup (project initialization)
-- **Phase 2**: Foundational (blocking prerequisites - MUST complete before user stories)
-- **Phase 3+**: User Stories in priority order (P1, P2, P3...)
+- **Phase 2**: Foundational (blocking prerequisites)
+- **Phase 3+**: User Stories in priority order
   - Within each story: Tests (if requested) → Models → Services → Endpoints → Integration
   - Each phase should be a complete, independently testable increment
 - **Final Phase**: Polish & Cross-Cutting Concerns

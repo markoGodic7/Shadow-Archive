@@ -52,7 +52,7 @@ Duel Archive is a full-stack web application for Yu-Gi-Oh! card discovery, deck 
 - Deck banlist compliance: no banned cards; limited ≤1, semi-limited ≤2
 
 **Scale/Scope**:
-- Target users: 10,000 concurrent (v1); horizontal scaling deferred
+- Target users: 1,000 concurrent (v1); horizontal scaling deferred to v2 for 10,000+
 - Card database: ~9,000 cards (from YGOPRODeck API)
 - Pages/Routes: 15+ (home, search, detail, login, register, profile, deck builder, wishlist, collection, trading, community, admin, etc.)
 - Features: 11 user stories (P1: search, auth; P2: deck building, detail layout; P3: wishlist, collection, gallery, random pull, trading, sharing, admin)

@@ -102,7 +102,7 @@ The YGOPRODeck API v7 at `https://db.ygoprodeck.com/api/v7/` provides card data 
 - Simple implementation (one database layer)
 - Sufficient for MVP (10,000 concurrent users)
 - Cache TTL: 48 hours (aligns with API documentation and typical TCG data update cycles)
-- Invalidation: On each cardinfo/cardsets/archetypes request, check API version via checkDBVer.php; if version > local version, clear cache and re-fetch
+- Invalidation: Cache the API database version separately with its own TTL (24 hours). A Celery background job checks `checkDBVer.php` every 24 hours and updates the cached version. On each card info request, compare against this cached version without making an additional API call. Only re-fetch card data if the background job has detected a version increment since the last cache refresh.
 
 **Alternatives Considered**:
 - Redis caching – Rejected for MVP due to additional infrastructure complexity; deferred to v2 scale-up
@@ -324,12 +324,12 @@ const routes = [
 ### Finding: Session Management Architecture
 
 **Token lifecycle**:
-1. User logs in → API returns `{access_token, refresh_token, access_expires_in: 900}` (15 min expiry as example)
-2. Access token stored in Redux + sessionStorage (cleared on logout)
-3. Refresh token stored in httpOnly cookie or localStorage (survives app restart)
-4. On access token expiry → API interceptor catches 401 → requests new access token with refresh token
-5. If refresh succeeds → update access token and retry original request
-6. If refresh fails → clear tokens and redirect to login
+1. User logs in → API returns `{access_token, refresh_token, access_expires_in: 900}` (15 min expiry as example) and sets refresh token as an httpOnly, Secure, SameSite cookie
+2. Access token stored in-memory only (Redux store); never persisted to sessionStorage or localStorage
+3. Refresh token stored exclusively in httpOnly cookie (inaccessible to JavaScript, survives app restart)
+4. On access token expiry → API interceptor catches 401 → calls refresh endpoint (cookie sent automatically) → receives new access token
+5. If refresh succeeds → update in-memory access token and retry original request
+6. If refresh fails → clear in-memory token, backend clears refresh cookie, redirect to login
 
 **API Client Configuration** (axios interceptor):
 
@@ -344,14 +344,18 @@ apiClient.interceptors.request.use((config) => {
 });
 
 // Response interceptor: handle token refresh
+// Refresh token is sent automatically via httpOnly cookie; no manual token handling needed
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401 && !error.config._isRetry) {
       error.config._isRetry = true;
       try {
-        const newTokens = await authAPI.refreshToken();
-        store.dispatch(setTokens(newTokens));
+        // Refresh endpoint reads httpOnly cookie automatically
+        const response = await axios.post('/api/auth/refresh/', {}, { withCredentials: true });
+        const newAccessToken = response.data.access;
+        store.dispatch(setAccessToken(newAccessToken));
+        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(error.config); // Retry original request
       } catch {
         store.dispatch(logout());
@@ -363,7 +367,7 @@ apiClient.interceptors.response.use(
 );
 ```
 
-**Decision**: Refresh token in httpOnly cookie (if possible); access token in memory
+**Decision**: Refresh token in httpOnly, Secure, SameSite cookie; access token in Redux memory only
 
 **Rationale**:
 - httpOnly cookie prevents XSS token theft
@@ -591,7 +595,7 @@ class CardSerializer(serializers.ModelSerializer):
 
 | Area | Decision | Rationale |
 |------|----------|-----------|
-| **Caching** | PostgreSQL, 48h TTL, version-based invalidation | Simple, sufficient for MVP, aligns with API standards |
+| **Caching** | PostgreSQL, 48h TTL; version check via background job every 24h | Avoids burning rate limit on version checks; aligns with API standards |
 | **Rate Limiting** | Django throttle, 15 req/s, exponential backoff | Safe margin below 20 req/s limit; prevents IP ban |
 | **Figma Authority** | Use exports as-is; CSS Modules only for animations | Figma is source of truth; no layout overrides |
 | **Redux State** | Feature-based slices with Redux Toolkit | Scalable, immer support, devtools integration |
