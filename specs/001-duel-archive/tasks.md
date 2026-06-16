@@ -10,10 +10,14 @@
 
 **Purpose**: Create the monorepo structure and shared tooling needed for frontend and backend development.
 
-- [ ] T001 Create the root project structure for `frontend/`, `backend/`, and `design/` per the implementation plan
-- [ ] T002 Initialize the React/Vite frontend with JavaScript tooling in `frontend/package.json`
-- [ ] T003 Initialize the Django/DRF backend with dependencies in `backend/requirements.txt`
-- [ ] T004 [P] Configure shared linting, formatting, and environment tooling in `frontend/.eslintrc.json`, `frontend/prettier.config.js`, and `backend/pyproject.toml`
+- [x] T001 Create the root project structure for `frontend/`, `backend/`, and `design/` per the implementation plan
+- [x] T002 Initialize the React/Vite frontend with JavaScript tooling in `frontend/package.json`
+- [x] T003 Initialize the Django/DRF backend with dependencies in `backend/requirements.txt`
+- [x] T004 [P] Configure shared linting, formatting, and environment tooling in `frontend/.eslintrc.json`, `frontend/prettier.config.js`, and `backend/pyproject.toml`
+
+### Tests for Setup
+
+- [x] T051 [P] Add smoke tests for frontend build bootstrapping and backend Django startup.
 
 ---
 
@@ -26,6 +30,10 @@
 - [ ] T007 [P] Implement the YGOPRODeck client, cache layer, and 15 req/s rate-limiting logic in `backend/src/apps/cards/services.py`
 - [ ] T008 [P] Create the Redux store, API client, and shared hooks in `frontend/src/store/store.js`, `frontend/src/services/apiClient.js`, and `frontend/src/hooks/`
 - [ ] T009 Create the main app shell, routes, and navigation in `frontend/src/App.jsx` and `frontend/src/pages/`
+
+### Tests for Foundational Infrastructure
+
+- [ ] T052 [P] Add foundational tests for shared API client, auth bootstrap, and base routing behavior.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel.
 
@@ -45,6 +53,10 @@
 - [ ] T013 [US1] Implement recent-view persistence and pagination behavior in `frontend/src/hooks/useCards.js` and `frontend/src/utils/localStorage.js`
 - [ ] T014 [US1] Wire the card detail route and two-column layout entry points in `frontend/src/pages/CardDetailPage.jsx`
 
+### Tests for User Story 1
+
+- [ ] T053 [P] Add frontend and backend tests for search, filters, pagination, detail rendering, and recent-view persistence.
+
 **Checkpoint**: User Story 1 is independently testable with guest search and detail browsing.
 
 ---
@@ -61,6 +73,10 @@
 - [ ] T016 [US2] Implement JWT refresh/interceptor logic in `frontend/src/services/authAPI.js` and `frontend/src/services/apiClient.js`
 - [ ] T017 [US2] Implement backend registration, login, logout, and guest migration flow in `backend/src/apps/users/views.py` and `backend/src/apps/users/serializers.py`
 - [ ] T018 [US2] Add protected-route handling and session persistence in `frontend/src/store/slices/authSlice.js`
+
+### Tests for User Story 2
+
+- [ ] T054 [P] Add authentication tests for registration, login, logout, token refresh, and guest-data migration.
 
 **Checkpoint**: User Story 2 is independently testable as the authentication baseline.
 
@@ -79,6 +95,10 @@
 - [ ] T021 [US3] Implement YDK import/export helpers in `backend/src/apps/decks/services.py` and `frontend/src/utils/ydkParser.js`
 - [ ] T022 [US3] Add deck state and validation feedback in `frontend/src/store/slices/deckSlice.js`
 
+### Tests for User Story 3
+
+- [ ] T055 [P] Add deck validation, banlist enforcement, YDK import/export, and statistics tests.
+
 **Checkpoint**: User Story 3 is independently testable for deck management workflows.
 
 ---
@@ -96,6 +116,10 @@
 - [ ] T025 [US4] Expose the full card detail serializer and price/banlist fields in `backend/src/apps/cards/serializers.py`
 - [ ] T026 [US4] Add price-history chart rendering in `frontend/src/components/PriceHistoryChart.jsx`
 
+### Tests for User Story 4
+
+- [ ] T056 [P] Add card detail layout, responsive behavior, banlist display, and price-chart tests.
+
 **Checkpoint**: User Story 4 is independently testable as the core detail page experience.
 
 ---
@@ -111,6 +135,10 @@
 - [ ] T027 [P] [US5] Build the wishlist page and heart interaction UI in `frontend/src/pages/WishlistPage.jsx` and `frontend/src/components/WishlistHeart.jsx`
 - [ ] T028 [US5] Implement wishlist CRUD and price alert endpoints in `backend/src/apps/wishlists/views.py`
 - [ ] T029 [US5] Add Celery task wiring for price alerts in `backend/src/apps/wishlists/tasks.py`
+
+### Tests for User Story 5
+
+- [ ] T057 [P] Add wishlist persistence, heart animation state, and price-alert scheduling tests.
 
 **Checkpoint**: User Story 5 is independently testable as a registered-user value feature.
 
@@ -128,6 +156,10 @@
 - [ ] T031 [US6] Implement collection models, serializers, and bulk-import logic in `backend/src/apps/collections/views.py`
 - [ ] T032 [US6] Add collection value calculation and filters in `frontend/src/store/slices/collectionSlice.js`
 
+### Tests for User Story 6
+
+- [ ] T058 [P] Add collection CRUD, CSV import, filter, and value-calculation tests.
+
 **Checkpoint**: User Story 6 is independently testable as the collection-management flow.
 
 ---
@@ -143,6 +175,10 @@
 - [ ] T033 [P] [US7] Build the spoiler gallery page and lazy-loading grid in `frontend/src/pages/GalleryPage.jsx`
 - [ ] T034 [US7] Add gallery search/filter support in `backend/src/apps/cards/views.py` and `frontend/src/services/cardAPI.js`
 - [ ] T035 [US7] Add gallery image handling for `image_url_cropped` in `frontend/src/components/CardThumbnail.jsx`
+
+### Tests for User Story 7
+
+- [ ] T059 [P] Add gallery rendering, filter behavior, image lazy-loading, and pagination tests.
 
 **Checkpoint**: User Story 7 is independently testable for visual browsing.
 
@@ -160,6 +196,10 @@
 - [ ] T037 [US8] Implement backend random-pull endpoint and throttle rules in `backend/src/apps/users/throttles.py` and `backend/src/apps/cards/views.py`
 - [ ] T038 [US8] Add collection increment handling for logged-in pulls in `backend/src/apps/collections/views.py`
 
+### Tests for User Story 8
+
+- [ ] T060 [P] Add random-pull, animation trigger, cooldown, and collection-update tests.
+
 **Checkpoint**: User Story 8 is independently testable as a gamified discovery flow.
 
 ---
@@ -175,6 +215,10 @@
 - [ ] T039 [P] [US9] Build the trade marketplace and offer form in `frontend/src/pages/TradingMarketplacePage.jsx`
 - [ ] T040 [US9] Implement trade offer models, matching, and status updates in `backend/src/apps/trading/views.py`
 - [ ] T041 [US9] Add Celery tasks for background trade matching in `backend/src/apps/trading/tasks.py`
+
+### Tests for User Story 9
+
+- [ ] T061 [P] Add trade-offer creation, match suggestion, and status-update tests.
 
 **Checkpoint**: User Story 9 is independently testable for community trade workflows.
 
@@ -192,6 +236,10 @@
 - [ ] T043 [US10] Implement shared deck, comment, and vote models/views in `backend/src/apps/community/views.py`
 - [ ] T044 [US10] Add deck copy and leaderboard logic in `backend/src/apps/community/services.py`
 
+### Tests for User Story 10
+
+- [ ] T062 [P] Add shared-deck vote, comment, and copy-to-user tests.
+
 **Checkpoint**: User Story 10 is independently testable for community sharing.
 
 ---
@@ -208,6 +256,10 @@
 - [ ] T046 [US11] Implement admin metrics, cache refresh, and audit-log endpoints in `backend/src/apps/admin_tools/views.py`
 - [ ] T047 [US11] Add admin permission and metrics collection tasks in `backend/src/apps/admin_tools/tasks.py`
 
+### Tests for User Story 11
+
+- [ ] T063 [P] Add admin dashboard, cache-clear, banlist-refresh, and audit-log tests.
+
 **Checkpoint**: User Story 11 is independently testable as the administration workflow.
 
 ---
@@ -219,6 +271,10 @@
 - [ ] T048 [P] Update root `README.md` after implementation milestones and summarize setup/validation steps
 - [ ] T049 [P] Hardening pass for accessibility, responsive behavior, and error handling in `frontend/src/components/` and `frontend/src/pages/`
 - [ ] T050 Run the quickstart validation flow from `specs/001-duel-archive/quickstart.md` and fix any blockers
+
+### Tests for Polish
+
+- [ ] T064 [P] Add cross-phase regression and smoke tests covering the completed MVP flow.
 
 ---
 
