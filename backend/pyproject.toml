@@ -1,3 +1,4 @@
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "src.settings.local"
 pythonpath = ["."]
+addopts = "--cov=backend/src --cov-fail-under=75"

@@ -3,4 +3,5 @@ from django.test import SimpleTestCase
 
 class SmokeTest(SimpleTestCase):
     def test_django_boots(self):
-        self.assertTrue(True)
+        response = self.client.get("/")
+        self.assertLess(response.status_code, 500)
