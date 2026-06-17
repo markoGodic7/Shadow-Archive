@@ -25,15 +25,15 @@
 
 **Purpose**: Establish the shared infrastructure that all user stories depend on before any story implementation begins.
 
-- [ ] T005 Implement Django settings, URL routing, CORS, and app bootstrap in `backend/src/settings/base.py` and `backend/src/urls.py`
-- [ ] T006 Implement shared authentication and JWT configuration in `backend/src/apps/users/authentication.py`
-- [ ] T007 [P] Implement the YGOPRODeck client, cache layer, and 15 req/s rate-limiting logic in `backend/src/apps/cards/services.py`
-- [ ] T008 [P] Create the Redux store, API client, and shared hooks in `frontend/src/store/store.js`, `frontend/src/services/apiClient.js`, and `frontend/src/hooks/`
-- [ ] T009 Create the main app shell, routes, and navigation in `frontend/src/App.jsx` and `frontend/src/pages/`
+- [x] T005 Implement Django settings, URL routing, CORS, and app bootstrap in `backend/src/settings/base.py` and `backend/src/urls.py`
+- [x] T006 Implement shared authentication and JWT configuration in `backend/src/apps/users/authentication.py`
+- [x] T007 [P] Implement the YGOPRODeck client, cache layer, and 15 req/s rate-limiting logic in `backend/src/apps/cards/services.py`
+- [x] T008 [P] Create the Redux store, API client, and shared hooks in `frontend/src/store/store.js`, `frontend/src/services/apiClient.js`, and `frontend/src/hooks/`
+- [x] T009 Create the main app shell, routes, and navigation in `frontend/src/App.jsx` and `frontend/src/pages/`
 
 ### Tests for Foundational Infrastructure
 
-- [ ] T052 [P] Add foundational tests for shared API client, auth bootstrap, and base routing behavior.
+- [x] T052 [P] Add foundational tests for shared API client, auth bootstrap, and base routing behavior.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel.
 
