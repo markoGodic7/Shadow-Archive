@@ -1,15 +1,4 @@
-import { useEffect, useState } from 'react';
-import { fetchHealth } from '../services/apiClient';
-
-export function useHealth() {
-  const [status, setStatus] = useState('loading');
-
-  useEffect(() => {
-    if (import.meta.env.MODE === 'test') {
-      setStatus('ok');
-      return undefined;
-    }
-
+useEffect(() => {
     let mounted = true;
 
     fetchHealth()
@@ -24,6 +13,3 @@ export function useHealth() {
       mounted = false;
     };
   }, []);
-
-  return status;
-}
