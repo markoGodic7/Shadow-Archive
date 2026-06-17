@@ -1,11 +1,24 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
+# Load .env file before reading any environment variables
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+# Read ALL environment variables FIRST
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() == 'true'
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+
+# THEN use them in logic
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-dev-only-key-do-not-use-in-production'
+    else:
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY environment variable is required')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,8 +70,12 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'duel_archive'),
+        'USER': os.environ.get('DB_USER', 'duel_archive'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
