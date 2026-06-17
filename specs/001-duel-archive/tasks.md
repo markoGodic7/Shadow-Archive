@@ -34,6 +34,7 @@
 ### Tests for Foundational Infrastructure
 
 - [x] T052 [P] Add foundational tests for shared API client, auth bootstrap, and base routing behavior.
+- [x] T065 [P] Rename remaining `duel-archive` references to `shadow-archive` across backend and frontend, including package names, app labels, and UI text.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel.
 

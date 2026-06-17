@@ -1,15 +1,17 @@
 from django.test import TestCase
 from django.conf import settings
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class JWTAuthBootstrapTests(TestCase):
     """Tests for JWT authentication setup and configuration."""
 
     def test_jwt_auth_class_configured(self):
-        """Verify JWTAuthentication is in default auth classes."""
+        """Verify JWTAuthentication path is in default auth classes."""
         auth_classes = settings.REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES']
-        self.assertIn(JWTAuthentication, auth_classes)
+        self.assertIn(
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+            auth_classes,
+        )
 
     def test_jwt_token_lifetime_configured(self):
         """Verify access token lifetime is set."""

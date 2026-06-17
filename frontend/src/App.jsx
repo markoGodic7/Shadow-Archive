@@ -19,7 +19,7 @@ function AppContent() {
     <BrowserRouter>
       <main style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif', display: 'grid', gap: '1rem' }}>
         <header>
-          <h1>Duel Archive</h1>
+          <h1>Shadow Archive</h1>
           <p>Backend health: {status}</p>
         </header>
 

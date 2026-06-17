@@ -4,7 +4,7 @@ from django.urls import path
 
 
 def health_check(request):
-    return JsonResponse({'status': 'ok', 'service': 'duel-archive-backend'})
+    return JsonResponse({'status': 'ok', 'service': 'shadow-archive-backend'})
 
 
 urlpatterns = [
