@@ -17,18 +17,19 @@ export default function SearchPage() {
   };
 
   const handleCardClick = (card) => {
-    try {
-      addRecentCard(card);
-    } finally {
-      navigate(`/cards/${card.id}`);
-    }
+    addRecentCard(card);
+    navigate(`/cards/${card.id}`);
   };
 
   return (
     <section style={{ display: 'grid', gap: '1rem' }}>
       <h2>Search</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search cards" />
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search cards"
+        />
         <button type="submit">Search</button>
       </form>
       {loading && <p>Loading cards…</p>}
@@ -66,4 +67,4 @@ export default function SearchPage() {
       </section>
     </section>
   );
-};
+}
