@@ -17,8 +17,11 @@ export default function SearchPage() {
   };
 
   const handleCardClick = (card) => {
-    addRecentCard(card);
-    navigate(`/cards/${card.id}`);
+    try {
+      addRecentCard(card);
+    } finally {
+      navigate(`/cards/${card.id}`);
+    }
   };
 
   return (
