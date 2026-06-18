@@ -48,15 +48,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Build the guest search page and filter controls in `frontend/src/pages/SearchPage.jsx`
-- [ ] T011 [P] [US1] Implement card search/detail API calls in `frontend/src/services/cardAPI.js`
-- [ ] T012 [US1] Implement backend card search and list endpoints in `backend/src/apps/cards/views.py`
-- [ ] T013 [US1] Implement recent-view persistence and pagination behavior in `frontend/src/hooks/useCards.js` and `frontend/src/utils/localStorage.js`
-- [ ] T014 [US1] Wire the card detail route and two-column layout entry points in `frontend/src/pages/CardDetailPage.jsx`
+- [x] T010 [P] [US1] Build the guest search page and filter controls in `frontend/src/pages/SearchPage.jsx`
+- [x] T011 [P] [US1] Implement card search/detail API calls in `frontend/src/services/cardAPI.js`
+- [x] T012 [US1] Implement backend card search and list endpoints in `backend/src/apps/cards/views.py`
+- [x] T013 [US1] Implement recent-view persistence and pagination behavior in `frontend/src/hooks/useCards.js` and `frontend/src/utils/localStorage.js`
+- [x] T014 [US1] Wire the card detail route and two-column layout entry points in `frontend/src/pages/CardDetailPage.jsx`
 
 ### Tests for User Story 1
 
-- [ ] T053 [P] Add frontend and backend tests for search, filters, pagination, detail rendering, and recent-view persistence.
+- [x] T053 [P] Add frontend and backend tests for search, filters, pagination, detail rendering, and recent-view persistence.
 
 **Checkpoint**: User Story 1 is independently testable with guest search and detail browsing.
 
