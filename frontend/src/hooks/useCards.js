@@ -12,6 +12,7 @@ export function useCards(query = '', page = 1) {
     async function load() {
       if (!query || !query.trim()) {
         setCards([]);
+        setError('');
         setLoading(false);
         return;
       }

@@ -71,3 +71,13 @@ class RateLimiterTests(SimpleTestCase):
             result = client.random_card()
 
         self.assertEqual(result['data'][0]['id'], 3)
+
+    def test_cache_ttl_is_48_hours(self):
+        """Verify cache TTL is set to 48 hours (172800 seconds)."""
+        client = YGOProDeckClient()
+        self.assertEqual(client.CACHE_TTL, 48 * 60 * 60)
+
+    def test_rate_limiter_max_rate_below_15(self):
+        """Verify rate limiter stays below 15 req/s."""
+        from src.apps.cards.services import _rate_limiter
+        self.assertLessEqual(_rate_limiter.max_rate, 15)
