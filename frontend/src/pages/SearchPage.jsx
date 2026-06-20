@@ -18,7 +18,7 @@ export default function SearchPage() {
 
   const handleCardClick = (card) => {
     addRecentCard(card);
-    navigate(`/cards/${card.id}`);
+    navigate(`/card/${card.id}`);
   };
 
   return (
@@ -40,10 +40,20 @@ export default function SearchPage() {
             <button
               type="button"
               onClick={() => handleCardClick(card)}
-              style={{ border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', width: '100%' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', width: '100%' }}
             >
-              <strong>{card.name}</strong>
-              <div>{card.type || 'Card'}</div>
+              {/* ADDED: Card thumbnail image */}
+              {card.card_images?.[0]?.image_url_small && (
+                <img
+                  src={card.card_images[0].image_url_small}
+                  alt={card.name}
+                  style={{ width: '60px', height: 'auto', borderRadius: '4px', flexShrink: 0 }}
+                />
+              )}
+              <div>
+                <strong>{card.name}</strong>
+                <div>{card.type || 'Card'}</div>
+              </div>
             </button>
           </li>
         ))}

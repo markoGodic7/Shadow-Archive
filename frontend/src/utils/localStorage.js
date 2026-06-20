@@ -3,7 +3,8 @@ const RECENT_KEY = 'shadow-archive-recently-viewed';
 export function getStoredRecentCards() {
   try {
     const parsed = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-    return Array.isArray(parsed) ? parsed : [];
+    const items = Array.isArray(parsed) ? parsed : [];
+    return items.filter((item) => item && item.id);
   } catch {
     return [];
   }
