@@ -37,7 +37,13 @@ export default function CardDetailPage() {
       <h2>{card.name}</h2>
       <p>{card.type || 'Card'}</p>
       <p>{card.desc || ''}</p>
-      {card.image_url && <img src={card.image_url} alt={card.name} style={{ maxWidth: '320px' }} />}
+      {card.card_images?.[0]?.image_url && (
+        <img
+          src={card.card_images[0].image_url}
+          alt={card.name}
+          style={{ maxWidth: '320px', borderRadius: '8px' }}
+        />
+      )}
     </section>
   );
 }
