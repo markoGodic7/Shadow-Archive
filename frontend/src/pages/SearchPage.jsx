@@ -60,8 +60,8 @@ export default function SearchPage() {
       <section>
         <h3>Recently viewed</h3>
         <ul>
-          {getStoredRecentCards().map((card) => (
-            <li key={card.id}>{card.name}</li>
+          {getStoredRecentCards().map((card, index) => (
+              <li key={card.id || index}>{card.name}</li>
           ))}
         </ul>
       </section>
