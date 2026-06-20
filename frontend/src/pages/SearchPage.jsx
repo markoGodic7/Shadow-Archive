@@ -61,7 +61,7 @@ export default function SearchPage() {
         <h3>Recently viewed</h3>
         <ul>
           {getStoredRecentCards().map((card) => (
-            <li key={card.id}>{card.name}</li>
+              <li key={card.id}>{card.name}</li>
           ))}
         </ul>
       </section>
