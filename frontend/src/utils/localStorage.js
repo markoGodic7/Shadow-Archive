@@ -10,6 +10,7 @@ export function getStoredRecentCards() {
 }
 
 export function addRecentCard(card) {
+  if (!card.id) return;
   const current = getStoredRecentCards();
   const updated = [
     { id: card.id, name: card.name, image_url_small: card.image_url_small, viewed_at: new Date().toISOString() },
