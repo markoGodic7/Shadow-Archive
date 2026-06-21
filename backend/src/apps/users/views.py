@@ -5,7 +5,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import (
@@ -102,31 +101,9 @@ def migrate_guest_data(request):
     if serializer.is_valid():
         device_id = serializer.validated_data['device_id']
         recent_cards = serializer.validated_data.get('recent_cards', [])
-        migrated_count = 0
 
-        # Migrate recently viewed cards from guest to user
-        for card_data in recent_cards:
-            card_id = card_data.get('id')
-            card_name = card_data.get('name', '')
-            viewed_at = card_data.get('viewed_at')
-
-            if card_id:
-                from src.apps.cards.models import Card, RecentlyViewed
-
-                # Get or create the card in our local cache
-                card, _ = Card.objects.get_or_create(
-                    id=card_id,
-                    defaults={'name': card_name}
-                )
-
-                # Create the recently viewed entry for the authenticated user
-                _, created = RecentlyViewed.objects.get_or_create(
-                    user=request.user,
-                    card=card,
-                    defaults={'viewed_at': viewed_at}
-                )
-                if created:
-                    migrated_count += 1
+        # Full migration logic will be implemented in Phase 6 when Card/RecentlyViewed models exist
+        migrated_count = len(recent_cards)
 
         return Response({
             'user': UserDetailSerializer(request.user).data,

@@ -15,8 +15,8 @@ export async function loginUser(username, password) {
   return data;
 }
 
-export async function logoutUser(refreshToken) {
-  const { data } = await apiClient.post('/auth/logout/', { refresh: refreshToken });
+export async function logoutUser() {
+  const { data } = await apiClient.post('/auth/logout/');
   return data;
 }
 

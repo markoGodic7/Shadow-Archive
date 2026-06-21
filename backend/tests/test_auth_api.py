@@ -66,6 +66,8 @@ class AuthApiTests(TestCase):
         self.assertEqual(refresh_response.status_code, 200)
         self.assertIn('access', refresh_response.json())
         self.assertNotIn('refresh', refresh_response.json(), 'Refresh token should not be in response body')
+        # Verify rotated refresh token is set in cookie
+        self.assertIn('refresh_token', refresh_response.cookies, 'Rotated refresh token should be in httpOnly cookie')
 
     def test_logout_user_blacklists_token(self):
         password = 'test-password-123'
