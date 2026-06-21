@@ -5,9 +5,10 @@ const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
 export const apiClient = axios.create({
   baseURL,
   timeout: 10000,
+  withCredentials: true,
 });
 
-// Request interceptor: attach JWT token if available
+// Request interceptor: attach access token if available
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('shadow-archive-access-token');
@@ -19,7 +20,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response interceptor: handle 401 and attempt token refresh
+// Response interceptor: handle 401 and attempt token refresh via httpOnly cookie
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -29,15 +30,12 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('shadow-archive-refresh-token');
-        if (!refreshToken) {
-          localStorage.removeItem('shadow-archive-access-token');
-          localStorage.removeItem('shadow-archive-refresh-token');
-          window.location.href = '/login';
-          return Promise.reject(error);
-        }
-
-        const response = await axios.post(`${baseURL}/auth/refresh/`, { refresh: refreshToken });
+        // Refresh token is sent automatically via httpOnly cookie
+        const response = await axios.post(
+          `${baseURL}/auth/refresh/`,
+          {},
+          { withCredentials: true }
+        );
         const { access } = response.data;
 
         localStorage.setItem('shadow-archive-access-token', access);
@@ -46,7 +44,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('shadow-archive-access-token');
-        localStorage.removeItem('shadow-archive-refresh-token');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

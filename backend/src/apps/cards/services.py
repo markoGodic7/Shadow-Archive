@@ -79,8 +79,7 @@ class YGOProDeckClient:
     def _make_request(self, endpoint, params=None):
         """Make a rate-limited, cached request to the YGOPRODeck API."""
         url = self._build_url(endpoint)
-        cache_key = f"ygoprodeck:{url}:{urlencode(sorted(params.items())) if params else ''}"
-
+        cache_key = f"ygoprodeck:{url}:{urlencode(sorted(params.items())).replace('+', '%20') if params else ''}"
         # Check cache first
         cached = cache.get(cache_key)
         if cached is not None:
@@ -89,8 +88,14 @@ class YGOProDeckClient:
 
         def do_request():
             headers = {'User-Agent': self.user_agent}
+            # Manually build URL to keep spaces as %20 instead of +
+            if params:
+                query_string = urlencode(params).replace('+', '%20')
+                full_url = f"{url}?{query_string}"
+            else:
+                full_url = url
             response = requests.get(
-                url, params=params, timeout=self.timeout, headers=headers
+                full_url, timeout=self.timeout, headers=headers
             )
             response.raise_for_status()
             return response.json()

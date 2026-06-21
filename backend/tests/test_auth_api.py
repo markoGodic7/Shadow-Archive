@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class AuthApiTests(TestCase):
@@ -18,7 +19,8 @@ class AuthApiTests(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn('tokens', response.json())
         self.assertIn('access', response.json()['tokens'])
-        self.assertIn('refresh', response.json()['tokens'])
+        self.assertNotIn('refresh', response.json()['tokens'], 'Refresh token should not be in response body')
+        self.assertIn('refresh_token', response.cookies, 'Refresh token should be in httpOnly cookie')
 
     def test_register_user_password_mismatch(self):
         response = self.client.post('/api/auth/register/', {
@@ -32,43 +34,66 @@ class AuthApiTests(TestCase):
         self.assertIn('password', response.json())
 
     def test_login_user_returns_tokens(self):
-        User.objects.create_user(username='existing', password='password123')
+        password = 'test-password-123'
+        User.objects.create_user(username='existing', password=password)
 
         response = self.client.post('/api/auth/login/', {
             'username': 'existing',
-            'password': 'password123',
+            'password': password,
         })
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('access', response.json())
-        self.assertIn('refresh', response.json())
+        self.assertNotIn('refresh', response.json(), 'Refresh token should not be in response body')
+        self.assertIn('refresh_token', response.cookies, 'Refresh token should be in httpOnly cookie')
+
+    def test_refresh_token_returns_new_access_token(self):
+        """Verify /api/auth/refresh/ returns a new access token from a valid refresh token."""
+        password = 'test-password-123'
+        User.objects.create_user(username='refresher', password=password)
+
+        login_response = self.client.post('/api/auth/login/', {
+            'username': 'refresher',
+            'password': password,
+        })
+        self.assertEqual(login_response.status_code, 200)
+        refresh_token = login_response.cookies.get('refresh_token')
+        self.assertIsNotNone(refresh_token, 'Expected refresh_token cookie after login')
+
+        # Refresh the access token
+        self.client.cookies['refresh_token'] = refresh_token.value
+        refresh_response = self.client.post('/api/auth/refresh/')
+        self.assertEqual(refresh_response.status_code, 200)
+        self.assertIn('access', refresh_response.json())
+        self.assertNotIn('refresh', refresh_response.json(), 'Refresh token should not be in response body')
 
     def test_logout_user_blacklists_token(self):
-        user = User.objects.create_user(username='testuser', password='password123')
-        from rest_framework_simplejwt.tokens import RefreshToken
-
+        password = 'test-password-123'
+        user = User.objects.create_user(username='testuser', password=password)
         refresh = RefreshToken.for_user(user)
+
+        self.client.cookies['refresh_token'] = str(refresh)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
 
-        response = self.client.post('/api/auth/logout/', {
-            'refresh': str(refresh),
-        })
+        response = self.client.post('/api/auth/logout/')
 
         self.assertEqual(response.status_code, 200)
 
+        self.client.cookies['refresh_token'] = str(refresh)
+        refresh_response = self.client.post('/api/auth/refresh/')
+        self.assertIn(refresh_response.status_code, [400, 401])
+
     def test_current_user_requires_authentication(self):
         response = self.client.get('/api/auth/me/')
-
         self.assertEqual(response.status_code, 401)
 
     def test_current_user_returns_authenticated_user(self):
+        password = 'test-password-123'
         user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='password123',
+            password=password,
         )
-        from rest_framework_simplejwt.tokens import RefreshToken
-
         refresh = RefreshToken.for_user(user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
 
@@ -85,9 +110,8 @@ class AuthApiTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_migrate_guest_data_returns_migration_summary(self):
-        user = User.objects.create_user(username='testuser', password='password123')
-        from rest_framework_simplejwt.tokens import RefreshToken
-
+        password = 'test-password-123'
+        user = User.objects.create_user(username='testuser', password=password)
         refresh = RefreshToken.for_user(user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
 

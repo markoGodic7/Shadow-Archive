@@ -34,7 +34,7 @@ def search_cards(request):
         })
 
     try:
-        data = YGOProDeckClient().search_cards(fname=query) or []
+        data = YGOProDeckClient().search_cards(fname=query.strip()) or []
     except Exception as exc:
         logger.error("Card search failed: %s", exc)
         return Response(

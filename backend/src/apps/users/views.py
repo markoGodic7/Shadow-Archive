@@ -4,7 +4,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import (
     GuestMigrationSerializer,
@@ -17,6 +19,32 @@ from .serializers import (
 class UserLoginView(TokenObtainPairView):
     serializer_class = UserLoginSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        tokens = response.data
+        refresh_token = tokens.pop('refresh', None)
+        if refresh_token:
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite='Lax',
+            )
+        return response
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            return Response(
+                {'detail': 'Refresh token not found in cookies'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        request.data['refresh'] = refresh_token
+        return super().post(request, *args, **kwargs)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -25,13 +53,20 @@ def register_user(request):
     if serializer.is_valid():
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
-        return Response({
+        response = Response({
             'user': UserDetailSerializer(user).data,
             'tokens': {
                 'access': str(refresh.access_token),
-                'refresh': str(refresh),
             },
         }, status=status.HTTP_201_CREATED)
+        response.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=True,
+            samesite='Lax',
+        )
+        return response
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -39,13 +74,19 @@ def register_user(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_user(request):
+    refresh_token = request.COOKIES.get('refresh_token')
+    if not refresh_token:
+        return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        refresh_token = request.data.get('refresh')
         token = RefreshToken(refresh_token)
         token.blacklist()
-        return Response({'detail': 'Logout successful.'}, status=status.HTTP_200_OK)
-    except Exception as exc:
-        return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+    except TokenError:
+        return Response({'detail': 'Invalid or expired refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    response = Response({'detail': 'Logout successful.'}, status=status.HTTP_200_OK)
+    response.delete_cookie('refresh_token')
+    return response
 
 
 @api_view(['GET'])
@@ -61,10 +102,35 @@ def migrate_guest_data(request):
     if serializer.is_valid():
         device_id = serializer.validated_data['device_id']
         recent_cards = serializer.validated_data.get('recent_cards', [])
+        migrated_count = 0
+
+        # Migrate recently viewed cards from guest to user
+        for card_data in recent_cards:
+            card_id = card_data.get('id')
+            card_name = card_data.get('name', '')
+            viewed_at = card_data.get('viewed_at')
+
+            if card_id:
+                from src.apps.cards.models import Card, RecentlyViewed
+
+                # Get or create the card in our local cache
+                card, _ = Card.objects.get_or_create(
+                    id=card_id,
+                    defaults={'name': card_name}
+                )
+
+                # Create the recently viewed entry for the authenticated user
+                _, created = RecentlyViewed.objects.get_or_create(
+                    user=request.user,
+                    card=card,
+                    defaults={'viewed_at': viewed_at}
+                )
+                if created:
+                    migrated_count += 1
 
         return Response({
             'user': UserDetailSerializer(request.user).data,
-            'migrated_cards': len(recent_cards),
+            'migrated_cards': migrated_count,
             'device_id': device_id,
         }, status=status.HTTP_200_OK)
 

@@ -4,28 +4,22 @@ import { loginUser, registerUser, logoutUser, getCurrentUser, migrateGuestData }
 export const register = createAsyncThunk('auth/register', async ({ username, email, password, passwordConfirm }) => {
   const response = await registerUser(username, email, password, passwordConfirm);
   localStorage.setItem('shadow-archive-access-token', response.tokens.access);
-  localStorage.setItem('shadow-archive-refresh-token', response.tokens.refresh);
   return response.user;
 });
 
 export const login = createAsyncThunk('auth/login', async ({ username, password }) => {
   const response = await loginUser(username, password);
   localStorage.setItem('shadow-archive-access-token', response.access);
-  localStorage.setItem('shadow-archive-refresh-token', response.refresh);
   return response;
 });
 
-export const logout = createAsyncThunk('auth/logout', async (_, { getState }) => {
-  const refreshToken = localStorage.getItem('shadow-archive-refresh-token');
-  if (refreshToken) {
-    try {
-      await logoutUser(refreshToken);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+export const logout = createAsyncThunk('auth/logout', async () => {
+  try {
+    await logoutUser();
+  } catch (error) {
+    console.error('Logout error:', error);
   }
   localStorage.removeItem('shadow-archive-access-token');
-  localStorage.removeItem('shadow-archive-refresh-token');
   return null;
 });
 

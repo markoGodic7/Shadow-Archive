@@ -40,4 +40,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 class GuestMigrationSerializer(serializers.Serializer):
     device_id = serializers.CharField(required=True)
-    recent_cards = serializers.JSONField(required=False, default=list)
+    recent_cards = serializers.ListField(
+        child=serializers.DictField(),
+        required=False,
+        default=list,
+    )
