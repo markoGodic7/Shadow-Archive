@@ -9,9 +9,16 @@ describe('apiClient', () => {
   it('creates an axios client using the configured API base URL', async () => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.test');
 
-    const createSpy = vi.fn(() => ({ get: vi.fn() }));
+    const createSpy = vi.fn(() => ({
+      get: vi.fn(),
+      post: vi.fn(),
+      interceptors: {
+        request: { use: vi.fn() },
+        response: { use: vi.fn() },
+      },
+    }));
     vi.doMock('axios', () => ({
-      default: { create: createSpy },
+      default: { create: createSpy, post: vi.fn() },
     }));
 
     await import('./apiClient');
@@ -24,7 +31,17 @@ describe('apiClient', () => {
   it('fetches the backend health endpoint', async () => {
     const getMock = vi.fn().mockResolvedValue({ data: { status: 'ok' } });
     vi.doMock('axios', () => ({
-      default: { create: vi.fn(() => ({ get: getMock })) },
+      default: {
+        create: vi.fn(() => ({
+          get: getMock,
+          post: vi.fn(),
+          interceptors: {
+            request: { use: vi.fn() },
+            response: { use: vi.fn() },
+          },
+        })),
+        post: vi.fn(),
+      },
     }));
 
     const { fetchHealth } = await import('./apiClient');

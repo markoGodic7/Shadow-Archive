@@ -70,14 +70,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [P] [US2] Build the login and registration pages in `frontend/src/pages/LoginPage.jsx` and `frontend/src/pages/SignupPage.jsx`
-- [ ] T016 [US2] Implement JWT refresh/interceptor logic in `frontend/src/services/authAPI.js` and `frontend/src/services/apiClient.js`
-- [ ] T017 [US2] Implement backend registration, login, logout, and guest migration flow in `backend/src/apps/users/views.py` and `backend/src/apps/users/serializers.py`
-- [ ] T018 [US2] Add protected-route handling and session persistence in `frontend/src/store/slices/authSlice.js`
+- [x] T015 [P] [US2] Build the login and registration pages in `frontend/src/pages/LoginPage.jsx` and `frontend/src/pages/SignupPage.jsx`
+- [x] T016 [US2] Implement JWT refresh/interceptor logic in `frontend/src/services/authAPI.js` and `frontend/src/services/apiClient.js`
+- [x] T017 [US2] Implement backend registration, login, logout, and guest migration flow in `backend/src/apps/users/views.py` and `backend/src/apps/users/serializers.py`
+- [x] T018 [US2] Add protected-route handling and session persistence in `frontend/src/store/slices/authSlice.js`
 
 ### Tests for User Story 2
 
-- [ ] T054 [P] Add authentication tests for registration, login, logout, token refresh, and guest-data migration.
+- [x] T054 [P] Add authentication tests for registration, login, logout, token refresh, and guest-data migration.
 
 **Checkpoint**: User Story 2 is independently testable as the authentication baseline.
 
